@@ -1,4 +1,4 @@
-package com.example.registrosapp.data
+package com.example.registrosapp.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.Index
