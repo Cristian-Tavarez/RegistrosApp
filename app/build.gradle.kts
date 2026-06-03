@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0")
+    implementation("androidx.compose.material3.adaptive:adaptive-layout:1.0.0")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0")
 
 
 
