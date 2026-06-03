@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.registrosapp.data.local.dao.HoraExtraDao
 import com.example.registrosapp.data.local.entity.HoraExtraEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HoraExtraViewModel @Inject constructor (private val horaExtraDao: HoraExtraDao) : ViewModel() {
+
+    val horasExtrasList: Flow<List<HoraExtraEntity>> = horaExtraDao.obtenerTodos()
 
     fun guardarHoraExtra(
         empleadoId: Int,
@@ -29,6 +32,12 @@ class HoraExtraViewModel @Inject constructor (private val horaExtraDao: HoraExtr
             )
             horaExtraDao.insertar(nuevoRegistro)
             onExito()
+        }
+    }
+
+    fun eliminarHoraExtra(horaExtra: HoraExtraEntity) {
+        viewModelScope.launch {
+            horaExtraDao.eliminar(horaExtra)
         }
     }
 }
