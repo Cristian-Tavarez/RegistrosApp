@@ -17,124 +17,197 @@ import androidx.compose.ui.unit.dp
 import com.example.registrosapp.data.local.entity.OcupacionEntity
 
 @Composable
-fun OcupacionScreen(viewModel: OcupacionViewModel) {
+fun OcupacionScreen(viewModel: OcupacionViewModel, esTablet: Boolean = false) {
     val listaOcupaciones by viewModel.ocupacionesList.collectAsState(initial = emptyList())
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = if (viewModel.ocupacionAEditar == null) "Registro de Ocupaciones" else "Modificar Ocupación",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        OutlinedTextField(
-            value = viewModel.descripcion,
-            onValueChange = { viewModel.descripcion = it },
-            label = { Text("Descripción de la Ocupación") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = viewModel.sueldo,
-            onValueChange = { viewModel.sueldo = it },
-            label = { Text("Sueldo Mensual (RD$)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (viewModel.mensajeError.isNotEmpty()) {
-            Text(
-                text = viewModel.mensajeError,
-                color = if (viewModel.mensajeError.startsWith("Error")) Color.Red else Color(0xFF007F00),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-
+    if (esTablet) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Button(
-                onClick = { viewModel.guardar() },
-                modifier = Modifier.weight(1f)
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(if (viewModel.ocupacionAEditar == null) "Guardar" else "Actualizar")
-            }
+                Text(
+                    text = if (viewModel.ocupacionAEditar == null) "Registro de Ocupaciones" else "Modificar Ocupación",
+                    style = MaterialTheme.typography.headlineSmall
+                )
 
-            if (viewModel.ocupacionAEditar != null) {
-                OutlinedButton(
-                    onClick = { viewModel.limpiarFormulario() },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Cancelar")
-                }
-            }
-        }
+                OutlinedTextField(
+                    value = viewModel.descripcion,
+                    onValueChange = { viewModel.descripcion = it },
+                    label = { Text("Descripción de la Ocupación") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                OutlinedTextField(
+                    value = viewModel.sueldo,
+                    onValueChange = { viewModel.sueldo = it },
+                    label = { Text("Sueldo Mensual (RD$)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-        Text(
-            text = "Ocupaciones Registradas",
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (listaOcupaciones.isEmpty()) {
-                item {
+                if (viewModel.mensajeError.isNotEmpty()) {
                     Text(
-                        text = "No hay ocupaciones registradas.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        text = viewModel.mensajeError,
+                        color = if (viewModel.mensajeError.startsWith("Error")) Color.Red else Color(0xFF007F00),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(onClick = { viewModel.guardar() }, modifier = Modifier.weight(1f)) {
+                        Text(if (viewModel.ocupacionAEditar == null) "Guardar" else "Actualizar")
+                    }
+
+                    if (viewModel.ocupacionAEditar != null) {
+                        OutlinedButton(onClick = { viewModel.limpiarFormulario() }, modifier = Modifier.weight(1f)) {
+                            Text("Cancelar")
+                        }
+                    }
+                }
             }
 
-            items(listaOcupaciones) { ocupacion ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = ocupacion.Descripcion,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = "RD$ ${String.format("%.2f", ocupacion.Sueldo)}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+            VerticalDivider(modifier = Modifier.fillMaxHeight(), color = MaterialTheme.colorScheme.outlineVariant)
 
-                        Row {
-                            IconButton(onClick = { viewModel.prepararEdicion(ocupacion) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "Editar",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                            IconButton(onClick = { viewModel.eliminarOcupacion(ocupacion) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Eliminar",
-                                    tint = Color.Red
-                                )
-                            }
+            Column(
+                modifier = Modifier
+                    .weight(1.2f)
+                    .fillMaxHeight()
+            ) {
+                Text(
+                    text = "Ocupaciones Registradas",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                ListaOcupacionesComponent(
+                    listaOcupaciones = listaOcupaciones,
+                    viewModel = viewModel
+                )
+            }
+        }
+    } else {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = if (viewModel.ocupacionAEditar == null) "Registro de Ocupaciones" else "Modificar Ocupación",
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            OutlinedTextField(
+                value = viewModel.descripcion,
+                onValueChange = { viewModel.descripcion = it },
+                label = { Text("Descripción de la Ocupación") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = viewModel.sueldo,
+                onValueChange = { viewModel.sueldo = it },
+                label = { Text("Sueldo Mensual (RD$)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (viewModel.mensajeError.isNotEmpty()) {
+                Text(
+                    text = viewModel.mensajeError,
+                    color = if (viewModel.mensajeError.startsWith("Error")) Color.Red else Color(0xFF007F00),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(onClick = { viewModel.guardar() }, modifier = Modifier.weight(1f)) {
+                    Text(if (viewModel.ocupacionAEditar == null) "Guardar" else "Actualizar")
+                }
+
+                if (viewModel.ocupacionAEditar != null) {
+                    OutlinedButton(onClick = { viewModel.limpiarFormulario() }, modifier = Modifier.weight(1f)) {
+                        Text("Cancelar")
+                    }
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            Text(text = "Ocupaciones Registradas", style = MaterialTheme.typography.titleMedium)
+
+            Box(modifier = Modifier.weight(1f)) {
+                ListaOcupacionesComponent(
+                    listaOcupaciones = listaOcupaciones,
+                    viewModel = viewModel
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ListaOcupacionesComponent(
+    listaOcupaciones: List<OcupacionEntity>,
+    viewModel: OcupacionViewModel
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (listaOcupaciones.isEmpty()) {
+            item {
+                Text(
+                    text = "No hay ocupaciones registradas.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+        }
+
+        items(listaOcupaciones) { ocupacion ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = ocupacion.Descripcion, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = "RD$ ${String.format("%.2f", ocupacion.Sueldo)}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Row {
+                        IconButton(onClick = { viewModel.prepararEdicion(ocupacion) }) {
+                            Icon(Icons.Default.Edit, "Editar", tint = MaterialTheme.colorScheme.primary)
+                        }
+                        IconButton(onClick = { viewModel.eliminarOcupacion(ocupacion) }) {
+                            Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red)
                         }
                     }
                 }
